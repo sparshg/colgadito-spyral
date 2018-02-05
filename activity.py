@@ -549,6 +549,14 @@ class SourceView(gtksourceview2.View):
         self.get_buffer().set_modified(False)
 
         pos = self.get_iter_at_location(1,1)
+        
+        if Gtk.check_version(3, 19, 8) is None:
+            if not pos[0]:
+                return False
+          
+            pos = pos[1]
+            
+        
         self.get_buffer().place_cursor(pos)
         self.scroll_to_iter(pos, False)
 
