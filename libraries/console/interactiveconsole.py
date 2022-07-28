@@ -115,7 +115,7 @@ class OutputStream:
   def __init__(self,view,old_out,style):
     self.view = view
     self.buffer = view.get_buffer()
-    self.mark = self.buffer.create_mark("End",self.buffer.get_end_iter(), Gtk.FALSE )
+    self.mark = self.buffer.create_mark("End",self.buffer.get_end_iter(), Gtk.false() )
     self.out = old_out
     self.style = style
     self.tee = 1
@@ -127,7 +127,7 @@ class OutputStream:
     end = self.buffer.get_end_iter()
 
     if not self.view  == None:
-      self.view.scroll_to_mark(self.mark, 0, Gtk.TRUE, 1, 1)
+      self.view.scroll_to_mark(self.mark, 0, Gtk.true(), 1, 1)
 
     self.buffer.insert_with_tags(end,text,self.style)
 
@@ -138,14 +138,14 @@ class GTKInterpreterConsole(Gtk.ScrolledWindow):
   """
   def __init__(self, callback):
     Gtk.ScrolledWindow.__init__(self)
-    self.set_policy (Gtk.POLICY_AUTOMATIC,Gtk.POLICY_AUTOMATIC)
+    self.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
 
     self.text = Gtk.TextView()
     self.text.set_wrap_mode(True)
     self.callback = callback
 
     font = "Monospace " + str(int(11/style.ZOOM_FACTOR))
-    self.text.modify_font(pango.FontDescription(font))
+    self.text.modify_font(Pango.FontDescription(font))
 
     # use exception trick to pick up the current frame
     try:
@@ -166,31 +166,31 @@ class GTKInterpreterConsole(Gtk.ScrolledWindow):
     self.ps1 = ">>> "
     self.ps2 = "... "
 
-    self.text.add_events( Gtk.gdk.KEY_PRESS_MASK )
+    self.text.add_events( Gdk.EventMask.KEY_PRESS_MASK )
     self.text.connect( "key_press_event", self.key_pressed )
 
     self.current_history = -1
 
-    self.mark = self.text.get_buffer().create_mark("End",self.text.get_buffer().get_end_iter(), Gtk.FALSE )
+    self.mark = self.text.get_buffer().create_mark("End",self.text.get_buffer().get_end_iter(), Gtk.false() )
 
             #setup colors
-    self.style_banner = Gtk.TextTag("banner")
+    self.style_banner = Gtk.TextTag.new("banner")
     self.style_banner.set_property( "foreground", "saddle brown" )
 
-    self.style_ps1 = Gtk.TextTag("ps1")
+    self.style_ps1 = Gtk.TextTag.new("ps1")
     self.style_ps1.set_property( "foreground", "DarkOrchid4" )
-    self.style_ps1.set_property( "editable", Gtk.FALSE )
+    self.style_ps1.set_property( "editable", Gtk.false() )
     self.style_ps1.set_property("font", "courier" )
 
-    self.style_ps2 = Gtk.TextTag("ps2")
+    self.style_ps2 = Gtk.TextTag.new("ps2")
     self.style_ps2.set_property( "foreground", "DarkOliveGreen" )
-    self.style_ps2.set_property( "editable", Gtk.FALSE  )
+    self.style_ps2.set_property( "editable", Gtk.false()  )
     self.style_ps2.set_property("font", "courier" )
 
-    self.style_out = Gtk.TextTag("stdout")
+    self.style_out = Gtk.TextTag.new("stdout")
     self.style_out.set_property( "foreground", "midnight blue" )
-    self.style_err = Gtk.TextTag("stderr")
-    self.style_err.set_property( "style", pango.STYLE_ITALIC )
+    self.style_err = Gtk.TextTag.new("stderr")
+    self.style_err.set_property( "style", Pango.Style.ITALIC )
     self.style_err.set_property( "foreground", "red" )
 
     self.text.get_buffer().get_tag_table().add(self.style_banner)
@@ -236,7 +236,7 @@ class GTKInterpreterConsole(Gtk.ScrolledWindow):
     else:
       self.text.get_buffer().insert_with_tags(end,text,style)
 
-    self.text.scroll_to_mark(self.mark, 0, Gtk.TRUE, 1, 1)
+    self.text.scroll_to_mark(self.mark, 0, Gtk.true(), 1, 1)
 
   def push(self, line):
 
@@ -254,39 +254,39 @@ class GTKInterpreterConsole(Gtk.ScrolledWindow):
     return more
 
   def key_pressed(self,widget,event):
-    if event.keyval == Gtk.gdk.keyval_from_name('Return'):
+    if event.keyval == Gdk.keyval_from_name('Return'):
       return self.execute_line()
 
-    if event.keyval == Gtk.gdk.keyval_from_name('Up'):
+    if event.keyval == Gdk.keyval_from_name('Up'):
       self.current_history = self.current_history - 1
       if self.current_history < - len(self.history):
         self.current_history = - len(self.history)
       return self.show_history()
-    elif event.keyval == Gtk.gdk.keyval_from_name('Down'):
+    elif event.keyval == Gdk.keyval_from_name('Down'):
       self.current_history = self.current_history + 1
       if self.current_history > 0:
         self.current_history = 0
       return self.show_history()
-    elif event.keyval == Gtk.gdk.keyval_from_name( 'Home'):
+    elif event.keyval == Gdk.keyval_from_name( 'Home'):
       l = self.text.get_buffer().get_line_count() - 1
       start = self.text.get_buffer().get_iter_at_line_offset(l,4)
       self.text.get_buffer().place_cursor(start)
-      return Gtk.TRUE
-    elif event.keyval == Gtk.gdk.keyval_from_name( 'Tab'):
+      return Gtk.true()
+    elif event.keyval == Gdk.keyval_from_name( 'Tab'):
       if self.current_line():
           return self.complete_line()
-    return Gtk.FALSE
+    return Gtk.false()
 
   def show_history(self):
     if self.current_history == 0:
-      return Gtk.TRUE
+      return Gtk.true()
     else:
       self.replace_line( self.history[self.current_history] )
-      return Gtk.TRUE
+      return Gtk.true()
 
   def current_line(self):
     start,end = self.current_line_bounds()
-    return self.text.get_buffer().get_text(start,end, Gtk.TRUE)
+    return self.text.get_buffer().get_text(start,end, Gtk.true())
 
   def current_line_bounds(self):
     txt_buffer = self.text.get_buffer()
@@ -321,7 +321,7 @@ class GTKInterpreterConsole(Gtk.ScrolledWindow):
     self.current_history = 0
 
     self.callback()
-    return Gtk.TRUE
+    return Gtk.true()
 
   def complete_line(self):
     line = self.current_line()
@@ -348,7 +348,7 @@ class GTKInterpreterConsole(Gtk.ScrolledWindow):
       line = line[0:i] + completions[0]
       self.replace_line(line)
 
-    return Gtk.TRUE
+    return Gtk.true()
 
 
 def main():
@@ -360,13 +360,13 @@ def main():
       Gtk.mainquit()
   
   def key_event(widget,event):
-      if Gtk.gdk.keyval_name( event.keyval) == 'd' and event.state & Gtk.gdk.CONTROL_MASK:
+      if Gdk.keyval_name( event.keyval) == 'd' and event.get_state() & Gdk.ModifierType.CONTROL_MASK:
           destroy()
-      return Gtk.FALSE
+      return Gtk.false()
 
   w.connect("destroy", destroy)
 
-  w.add_events( Gtk.gdk.KEY_PRESS_MASK )
+  w.add_events( Gdk.EventMask.KEY_PRESS_MASK )
   w.connect( 'key_press_event', key_event)
   w.show_all()
 

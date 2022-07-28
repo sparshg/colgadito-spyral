@@ -76,16 +76,19 @@ class Activity(Activity):
         white = Gdk.RGBA(1, 1, 1, 1)
         eb.override_background_color(Gtk.StateType.NORMAL, white)
         eb.show()
-        self.box.append_page(eb, Gtk.Label("Inicio"))
+        self.box.append_page(eb, Gtk.Label(label="Inicio"))
 
-        self._pygamecanvas = sugargame.canvas.PygameCanvas(self)
-        self._pygamecanvas.set_flags(Gtk.EXPAND)
-        self._pygamecanvas.set_flags(Gtk.FILL)
+        # self._pygamecanvas = sugargame.canvas.PygameCanvas(self)
+        # self._pygamecanvas.set_flags(Gtk.AttachOptions.EXPAND)
+        # self._pygamecanvas.set_flags(Gtk.AttachOptions.FILL)
+        self._pygamecanvas = sugargame.canvas.PygameCanvas(
+            self, main=self.run_game, modules=[pygame.display, pygame.font])
+        self.set_canvas(self._pygamecanvas)
 
         self.connect("visibility-notify-event", self.redraw)
-        self._pygamecanvas.set_events(Gdk.BUTTON_PRESS_MASK)
+        self._pygamecanvas.set_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self._pygamecanvas.connect("button-press-event", self._pygamecanvas.grab_focus)
-        self.box.append_page(self._pygamecanvas, Gtk.Label("Juego"))
+        self.box.append_page(self._pygamecanvas, Gtk.Label(label="Juego"))
 
         self.box.show()
         self.set_canvas(self.p)
@@ -98,7 +101,7 @@ class Activity(Activity):
         self.build_toolbar()
         self.credits = None
         self.editor = None
-        self._pygamecanvas.run_pygame(self.run_game)
+        # self._pygamecanvas.run_pygame(self.run_game)
 
     def redraw(self, widget=None, b=None, c=None):
         scene = spyral.director.get_scene()
@@ -118,7 +121,7 @@ class Activity(Activity):
         self.remove_alert(alert)
 
     def check_modified(self):
-        if self.box.current_page()==2:
+        if self.box.get_current_page()==2:
             if not self.save_button.get_sensitive():
                 if self.editor.modificado():
                     self.save_button.set_sensitive(True)
@@ -164,7 +167,7 @@ class Activity(Activity):
         self.tree.connect("file-selected", self.open_file)
         self.tree.show()
         self.h.pack1(self.tree)
-        self.box.append_page(self.h, Gtk.Label("Editor"))
+        self.box.append_page(self.h, Gtk.Label(label="Editor"))
 
         if False: #os.path.isfile("/usr/bin/gvim"):
             # Si podemos, lo hacemos
@@ -183,8 +186,8 @@ class Activity(Activity):
             self.editor = SourceView()
 
             scroller = Gtk.ScrolledWindow()
-            scroller.set_policy(Gtk.POLICY_AUTOMATIC,
-                          Gtk.POLICY_AUTOMATIC)
+            scroller.set_policy(Gtk.PolicyType.AUTOMATIC,
+                          Gtk.PolicyType.AUTOMATIC)
             scroller.add(self.editor)
             scroller.show()
             self.h.pack2(scroller)
@@ -293,17 +296,17 @@ class Activity(Activity):
         spyral.director.run(sugar = True)
         #except AttributeError as detail:
         #    detail2 = traceback.format_exc()
-        #    self.box.set_page(0)
+        #    self.box.set_current_page(0)
         #    self.alert( detail2, "Spyral se ha detenido abruptamente.", 60)
 
     def show_game(self, widget):
-        self.box.set_page(1)
+        self.box.set_current_page(1)
         self.redraw()
 
     def show_editor(self, widget):
         if not self.editor:
             self.build_editor()
-        self.box.set_page(2)
+        self.box.set_current_page(2)
         self.redraw()
 
     def restart_game(self, widget):
@@ -323,7 +326,7 @@ class Activity(Activity):
 
     def game_ready(self, widget = None):
         self.game_button.set_active(True)
-        self.box.set_page(1)
+        self.box.set_current_page(1)
         self._pygamecanvas.grab_focus()
         self.window.set_cursor(None)
 
@@ -336,7 +339,7 @@ class Activity(Activity):
     def can_close(self):
         if self.editor:
             self.editor.close()
-        self.box.set_page(0)
+        self.box.set_current_page(0)
         try:
             spyral.director.quit()
         except spyral.exceptions.GameEndException:
@@ -368,15 +371,15 @@ class FileViewer(Gtk.ScrolledWindow):
 
     __gsignals__ = {
         'file-selected': (GObject.SignalFlags.RUN_FIRST,
-                           GObject.TYPE_NONE,
+                           None,
                            ([str])),
     }
 
     def __init__(self, path, initial_filename):
         Gtk.ScrolledWindow.__init__(self)
 
-        self.props.hscrollbar_policy = Gtk.POLICY_AUTOMATIC
-        self.props.vscrollbar_policy = Gtk.POLICY_AUTOMATIC
+        self.props.hscrollbar_policy = Gtk.PolicyType.AUTOMATIC
+        self.props.vscrollbar_policy = Gtk.PolicyType.AUTOMATIC
         self.set_size_request(style.GRID_CELL_SIZE * 3, -1)
 
         self._path = None
@@ -505,7 +508,7 @@ class SourceView(GtkSource.View):
 
     def init_syntax(self):
         text_buffer = self.get_buffer()
-        lang_manager = GtkSource.language_manager_get_default()
+        lang_manager = GtkSource.LanguageManager.get_default()
         if hasattr(lang_manager, 'list_languages'):
             langs = lang_manager.list_languages()
         else:
@@ -522,7 +525,7 @@ class SourceView(GtkSource.View):
         else:
             text_buffer.set_highlight_syntax(True)
 
-        mgr = GtkSource.style_scheme_manager_get_default()
+        mgr = GtkSource.StyleSchemeManager.get_default()
         style_scheme = mgr.get_scheme('oblivion')
         self.get_buffer().set_style_scheme(style_scheme)
 
