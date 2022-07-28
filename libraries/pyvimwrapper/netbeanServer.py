@@ -1,9 +1,9 @@
 
-from   logSystem import *
-from   netbeanArgs import *
+from   .logSystem import *
+from   .netbeanArgs import *
 import random, errno, re
 
-from myTcpServer import *
+from .myTcpServer import *
 
 dbg = getLogger('NetbeanServer').debug
 err = getLogger('NetbeanServer').error
@@ -107,7 +107,7 @@ class NetbeanServer( MyTcpServer ):
                 line = self.rfile.readline()[:-1]
                 return line
 
-            except socket.timeout, v:
+            except socket.timeout as v:
                 if blocking:
                     time.sleep( 0.1 )
                     continue
@@ -115,7 +115,7 @@ class NetbeanServer( MyTcpServer ):
                     # no data was available
                     return ''
 
-            except socket.error, v:
+            except socket.error as v:
                 # this is probably not portable, but no other solution available
                 # python doc says that the error in that case is OS dependent.
                 # need to add errno values for Linux and MacOS...
@@ -136,7 +136,7 @@ class NetbeanServer( MyTcpServer ):
                     err( "Read error from socket: %s" % str(v) )
                     return ''
 
-            except IOError, e:
+            except IOError as e:
                 # IOError occurs when socket has closed
                 return ''
 

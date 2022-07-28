@@ -110,6 +110,7 @@ GameClock.schedule_interval.
 """
 
 import time
+from functools import reduce
 
 
 class _IntervalItem(object):

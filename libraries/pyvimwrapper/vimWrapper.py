@@ -1,8 +1,8 @@
 
-from vimLauncher import VimLauncher
-from netbeanServer import NetbeanServer, parseNetbeanArgs
-from logSystem import getLogger
-from bufferMgr import BufferMgr
+from .vimLauncher import VimLauncher
+from .netbeanServer import NetbeanServer, parseNetbeanArgs
+from .logSystem import getLogger
+from .bufferMgr import BufferMgr
 
 dbg = getLogger('VimWrapper').debug
 

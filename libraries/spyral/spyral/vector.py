@@ -1,7 +1,7 @@
 """A vector is a class that behaves like a 2-tuple, but with convenient
 methods."""
 
-from __future__ import division
+
 import math
 
 class Vec2D(object):
@@ -92,7 +92,7 @@ class Vec2D(object):
         try:
             return Vec2D(self.x - o[0], self.y - o[1])
         except (IndexError, TypeError):
-            print self, o
+            print(self, o)
             return NotImplemented
 
     __isub__ = __sub__
@@ -109,7 +109,7 @@ class Vec2D(object):
         except (IndexError, TypeError):
             pass
 
-        if isinstance(o, (int, long, float)):
+        if isinstance(o, (int, float)):
             return Vec2D(self.x * o, self.y * o)
 
         return NotImplemented
@@ -123,7 +123,7 @@ class Vec2D(object):
         except (IndexError, TypeError):
             pass
 
-        if isinstance(o, (int, long, float)):
+        if isinstance(o, (int, float)):
             return Vec2D(self.x / o, self.y / o)
 
     __truediv__ = __div__

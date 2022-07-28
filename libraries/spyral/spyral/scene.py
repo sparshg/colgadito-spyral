@@ -1,4 +1,4 @@
-from __future__ import division
+
 import spyral
 import pygame
 import time
@@ -14,16 +14,16 @@ except ImportError:
     _GREENLETS_AVAILABLE = False
     
 from itertools import chain
-from layertree import _LayerTree
+from .layertree import _LayerTree
 from collections import defaultdict
 from weakref import ref as _wref
-from weakmethod import WeakMethodBound
+from .weakmethod import WeakMethodBound
 
 def _has_value(obj, collect):
     for item in collect:
         if obj is item:
             return True
-        elif isinstance(item, dict) and obj in item.values():
+        elif isinstance(item, dict) and obj in list(item.values()):
             return True
         elif isinstance(item, tuple) and obj in item:
             return True
@@ -136,7 +136,7 @@ class Scene(object):
 
         :param float delta: The amount of time progressed.
         """
-        for actor, greenlet in self._greenlets.iteritems():
+        for actor, greenlet in self._greenlets.items():
             delta, rerun = greenlet.switch(delta)
             while rerun:
                 delta, rerun = greenlet.switch(delta)
@@ -227,11 +227,11 @@ class Scene(object):
             # Autodetect the arguments
             try:
                 funct = handler.func
-            except AttributeError, e:
+            except AttributeError as e:
                 funct = handler
             try:
                 h_argspec = inspect.getargspec(funct)
-            except Exception, e:
+            except Exception as e:
                 raise Exception(("Unfortunate Python Problem! "
                                  "%s isn't supported by Python's "
                                  "inspect module! Oops.") % str(handler))
@@ -279,7 +279,7 @@ class Scene(object):
             self._pending = []
     
     def _unregister_sprite_events(self, sprite):
-        for name, handlers in self._handlers.items():
+        for name, handlers in list(self._handlers.items()):
             self._handlers[name] = [h for h in handlers
                                         if (not isinstance(h[0], WeakMethodBound)
                                             or h[0].weak_object_ref() is not sprite)]
@@ -302,8 +302,8 @@ class Scene(object):
                                              in self._handlers[event_namespace]
                                              if ((not isinstance(h[0], WeakMethodBound) and handler != h[0])
                                              or (isinstance(h[0], WeakMethodBound)
-                                                and ((h[0].func is not handler.im_func) 
-                                                or (h[0].weak_object_ref() is not handler.im_self))))]
+                                                and ((h[0].func is not handler.__func__) 
+                                                or (h[0].weak_object_ref() is not handler.__self__))))]
         if not self._handlers[event_namespace]:
             del self._handlers[event_namespace]
 
@@ -364,7 +364,7 @@ class Scene(object):
             layers = properties.pop('layers')
             self._set_layers(layers)
         if len(properties) > 0:
-            spyral.exceptions.unused_style_warning(self, properties.iterkeys())
+            spyral.exceptions.unused_style_warning(self, iter(properties.keys()))
 
     def load_style(self, path):
         """
@@ -530,7 +530,7 @@ class Scene(object):
             self._sprites.remove(sprite)
         if sprite in self._collision_boxes:
             del self._collision_boxes[sprite]
-        for view in self._invalidating_views.keys():
+        for view in list(self._invalidating_views.keys()):
             self._invalidating_views[view].discard(sprite)
         self._unregister_sprite_events(sprite)
 

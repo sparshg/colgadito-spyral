@@ -18,7 +18,7 @@ def cargar_frases():
     for linea in archivo:
         if linea.find(",") > 0:
             # desciframos
-            linea = unicode(linea.decode("utf-8"))
+            linea = str(linea)
             frases.append(linea)
     archivo.close()
     return frases

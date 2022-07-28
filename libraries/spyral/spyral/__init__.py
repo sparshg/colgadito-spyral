@@ -43,7 +43,7 @@ ATTRIBUTE_MODULES = frozenset(['memoize', 'point', 'exceptions', 'easing',
                                'util', 'keyboard', 'image'])
 
 OBJECT_ORIGINS = {}
-for module, items in ALL_BY_MODULE.iteritems():
+for module, items in list(ALL_BY_MODULE.items()):
     for item in items:
         OBJECT_ORIGINS[item] = module
 

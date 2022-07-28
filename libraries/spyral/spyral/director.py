@@ -47,7 +47,7 @@ def init(size=(0, 0),
     global _max_ups
 
     if _initialized:
-        print 'Warning: Tried to initialize the director twice. Ignoring.'
+        print('Warning: Tried to initialize the director twice. Ignoring.')
     spyral._init()
 
     flags = 0

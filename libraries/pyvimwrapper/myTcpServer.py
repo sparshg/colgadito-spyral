@@ -1,5 +1,5 @@
 
-from logSystem import *
+from .logSystem import *
 import socket
 import random
 import string
@@ -26,7 +26,7 @@ class MyTcpServer:
         try:
             self._startSocket()
 
-        except Exception, e:
+        except Exception as e:
             dbg('Start failed.')
             if string.find(str(e), "ddress already in use") >= 0:
 

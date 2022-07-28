@@ -5,18 +5,21 @@
 #  See www.python.org/2.2/license.html for
 #  license details.
 #
-import pygtk
-pygtk.require('2.0')
-import gtk
-import gtk.gdk
+
+
+import gi
+
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+from gi.repository import Gtk, Gdk, Pango
+
 import code
 import sys
-import pango
 
-import __builtin__
+# import __builtin__
 import __main__
 
-from sugar.graphics import style
+from sugar3.graphics import style
 
 banner = """Taller de Artesano de Videojuegos
 Python %s
@@ -112,7 +115,7 @@ class OutputStream:
   def __init__(self,view,old_out,style):
     self.view = view
     self.buffer = view.get_buffer()
-    self.mark = self.buffer.create_mark("End",self.buffer.get_end_iter(), gtk.FALSE )
+    self.mark = self.buffer.create_mark("End",self.buffer.get_end_iter(), Gtk.FALSE )
     self.out = old_out
     self.style = style
     self.tee = 1
@@ -124,20 +127,20 @@ class OutputStream:
     end = self.buffer.get_end_iter()
 
     if not self.view  == None:
-      self.view.scroll_to_mark(self.mark, 0, gtk.TRUE, 1, 1)
+      self.view.scroll_to_mark(self.mark, 0, Gtk.TRUE, 1, 1)
 
     self.buffer.insert_with_tags(end,text,self.style)
 
-class GTKInterpreterConsole(gtk.ScrolledWindow):
+class GTKInterpreterConsole(Gtk.ScrolledWindow):
   """
   An InteractiveConsole for GTK. It's an actual widget,
   so it can be dropped in just about anywhere.
   """
   def __init__(self, callback):
-    gtk.ScrolledWindow.__init__(self)
-    self.set_policy (gtk.POLICY_AUTOMATIC,gtk.POLICY_AUTOMATIC)
+    Gtk.ScrolledWindow.__init__(self)
+    self.set_policy (Gtk.POLICY_AUTOMATIC,Gtk.POLICY_AUTOMATIC)
 
-    self.text = gtk.TextView()
+    self.text = Gtk.TextView()
     self.text.set_wrap_mode(True)
     self.callback = callback
 
@@ -163,30 +166,30 @@ class GTKInterpreterConsole(gtk.ScrolledWindow):
     self.ps1 = ">>> "
     self.ps2 = "... "
 
-    self.text.add_events( gtk.gdk.KEY_PRESS_MASK )
+    self.text.add_events( Gtk.gdk.KEY_PRESS_MASK )
     self.text.connect( "key_press_event", self.key_pressed )
 
     self.current_history = -1
 
-    self.mark = self.text.get_buffer().create_mark("End",self.text.get_buffer().get_end_iter(), gtk.FALSE )
+    self.mark = self.text.get_buffer().create_mark("End",self.text.get_buffer().get_end_iter(), Gtk.FALSE )
 
             #setup colors
-    self.style_banner = gtk.TextTag("banner")
+    self.style_banner = Gtk.TextTag("banner")
     self.style_banner.set_property( "foreground", "saddle brown" )
 
-    self.style_ps1 = gtk.TextTag("ps1")
+    self.style_ps1 = Gtk.TextTag("ps1")
     self.style_ps1.set_property( "foreground", "DarkOrchid4" )
-    self.style_ps1.set_property( "editable", gtk.FALSE )
+    self.style_ps1.set_property( "editable", Gtk.FALSE )
     self.style_ps1.set_property("font", "courier" )
 
-    self.style_ps2 = gtk.TextTag("ps2")
+    self.style_ps2 = Gtk.TextTag("ps2")
     self.style_ps2.set_property( "foreground", "DarkOliveGreen" )
-    self.style_ps2.set_property( "editable", gtk.FALSE  )
+    self.style_ps2.set_property( "editable", Gtk.FALSE  )
     self.style_ps2.set_property("font", "courier" )
 
-    self.style_out = gtk.TextTag("stdout")
+    self.style_out = Gtk.TextTag("stdout")
     self.style_out.set_property( "foreground", "midnight blue" )
-    self.style_err = gtk.TextTag("stderr")
+    self.style_err = Gtk.TextTag("stderr")
     self.style_err.set_property( "style", pango.STYLE_ITALIC )
     self.style_err.set_property( "foreground", "red" )
 
@@ -233,7 +236,7 @@ class GTKInterpreterConsole(gtk.ScrolledWindow):
     else:
       self.text.get_buffer().insert_with_tags(end,text,style)
 
-    self.text.scroll_to_mark(self.mark, 0, gtk.TRUE, 1, 1)
+    self.text.scroll_to_mark(self.mark, 0, Gtk.TRUE, 1, 1)
 
   def push(self, line):
 
@@ -251,39 +254,39 @@ class GTKInterpreterConsole(gtk.ScrolledWindow):
     return more
 
   def key_pressed(self,widget,event):
-    if event.keyval == gtk.gdk.keyval_from_name('Return'):
+    if event.keyval == Gtk.gdk.keyval_from_name('Return'):
       return self.execute_line()
 
-    if event.keyval == gtk.gdk.keyval_from_name('Up'):
+    if event.keyval == Gtk.gdk.keyval_from_name('Up'):
       self.current_history = self.current_history - 1
       if self.current_history < - len(self.history):
         self.current_history = - len(self.history)
       return self.show_history()
-    elif event.keyval == gtk.gdk.keyval_from_name('Down'):
+    elif event.keyval == Gtk.gdk.keyval_from_name('Down'):
       self.current_history = self.current_history + 1
       if self.current_history > 0:
         self.current_history = 0
       return self.show_history()
-    elif event.keyval == gtk.gdk.keyval_from_name( 'Home'):
+    elif event.keyval == Gtk.gdk.keyval_from_name( 'Home'):
       l = self.text.get_buffer().get_line_count() - 1
       start = self.text.get_buffer().get_iter_at_line_offset(l,4)
       self.text.get_buffer().place_cursor(start)
-      return gtk.TRUE
-    elif event.keyval == gtk.gdk.keyval_from_name( 'Tab'):
+      return Gtk.TRUE
+    elif event.keyval == Gtk.gdk.keyval_from_name( 'Tab'):
       if self.current_line():
           return self.complete_line()
-    return gtk.FALSE
+    return Gtk.FALSE
 
   def show_history(self):
     if self.current_history == 0:
-      return gtk.TRUE
+      return Gtk.TRUE
     else:
       self.replace_line( self.history[self.current_history] )
-      return gtk.TRUE
+      return Gtk.TRUE
 
   def current_line(self):
     start,end = self.current_line_bounds()
-    return self.text.get_buffer().get_text(start,end, gtk.TRUE)
+    return self.text.get_buffer().get_text(start,end, Gtk.TRUE)
 
   def current_line_bounds(self):
     txt_buffer = self.text.get_buffer()
@@ -318,7 +321,7 @@ class GTKInterpreterConsole(gtk.ScrolledWindow):
     self.current_history = 0
 
     self.callback()
-    return gtk.TRUE
+    return Gtk.TRUE
 
   def complete_line(self):
     line = self.current_line()
@@ -345,30 +348,30 @@ class GTKInterpreterConsole(gtk.ScrolledWindow):
       line = line[0:i] + completions[0]
       self.replace_line(line)
 
-    return gtk.TRUE
+    return Gtk.TRUE
 
 
 def main():
-  w = gtk.Window()
+  w = Gtk.Window()
   console = GTKInterpreterConsole()
   console.set_size_request(640,480)
   w.add(console)
   def destroy(arg=None):
-      gtk.mainquit()
+      Gtk.mainquit()
   
   def key_event(widget,event):
-      if gtk.gdk.keyval_name( event.keyval) == 'd' and event.state & gtk.gdk.CONTROL_MASK:
+      if Gtk.gdk.keyval_name( event.keyval) == 'd' and event.state & Gtk.gdk.CONTROL_MASK:
           destroy()
-      return gtk.FALSE
+      return Gtk.FALSE
 
   w.connect("destroy", destroy)
 
-  w.add_events( gtk.gdk.KEY_PRESS_MASK )
+  w.add_events( Gtk.gdk.KEY_PRESS_MASK )
   w.connect( 'key_press_event', key_event)
   w.show_all()
 
 
-  gtk.main()
+  Gtk.main()
 
 if __name__ == '__main__':
   main()

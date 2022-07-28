@@ -123,7 +123,7 @@ class _LayerTree(object):
         self.maximum_height = self.tree_height[self.scene]
         self.layer_location = {}
         self._precompute_position_for_layer(self.scene, [])
-        for layer_key, v in self.layer_location.iteritems():
+        for layer_key, v in self.layer_location.items():
             self.layer_location[layer_key] = self._compute_positional_chain(v)
 
     def _precompute_position_for_layer(self, view, current_position):

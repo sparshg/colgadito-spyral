@@ -876,9 +876,9 @@ class TextInputWidget(BaseWidget):
             if key not in TextInputWidget._non_printable_keys:
                 if self._selecting:
                     self._delete()
-                unicode = chr(event.key)
-                if self._validate(unicode):
-                    self._insert_char(self.cursor_pos, unicode)
+                str = chr(event.key)
+                if self._validate(str):
+                    self._insert_char(self.cursor_pos, str)
                     self.cursor_pos+= 1
 
         if not shift_is_down or (shift_is_down and key not in TextInputWidget._non_insertable_keys):

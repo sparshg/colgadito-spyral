@@ -51,7 +51,7 @@ def from_sequence(images, orientation="right", padding=0):
         if orientation in ('left', 'above'):
             reversed(images)
 
-        if type(padding) in (float, int, long):
+        if type(padding) in (float, int, int):
             padding = [padding] * len(images)
         else:
             padding = list(padding)

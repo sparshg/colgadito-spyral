@@ -488,7 +488,7 @@ class View(object):
                 value = properties.pop(property)
                 setattr(self, property, value)
         if len(properties) > 0:
-            spyral.exceptions.unused_style_warning(self, properties.iterkeys())
+            spyral.exceptions.unused_style_warning(self, iter(properties.keys()))
 
     def collide_sprite(self, other):
         """

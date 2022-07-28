@@ -30,7 +30,7 @@ import spyral
 import os
 import random
 import base64
-from weakmethod import WeakMethod as _wm
+from .weakmethod import WeakMethod as _wm
 
 def WeakMethod(func):
     try:
@@ -219,7 +219,7 @@ def register_multiple(event_namespace, handlers, args=None,
     """
     if scene is None:
         scene = spyral._get_executing_scene()
-    scene._reg_internal(event_namespace, map(WeakMethod, handlers),
+    scene._reg_internal(event_namespace, list(map(WeakMethod, handlers)),
                         args, kwargs, priority, False)
 
 def register_multiple_dynamic(event_namespace, handler_strings, args=None,
@@ -299,7 +299,7 @@ def _pygame_to_spyral(event):
         k = keys.reverse_map.get(event.key, 'unknown')
         event_type += '.' + k
     if event_type.startswith('input.mouse.motion'):
-        e.left, e.middle, e.right = map(bool, event.buttons)
+        e.left, e.middle, e.right = list(map(bool, event.buttons))
     elif event_type.startswith('input.mouse'):
         try:
             m = MOUSE_MAP[event.button-1]

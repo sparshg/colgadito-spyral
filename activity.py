@@ -6,7 +6,7 @@ import gi
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
-from gi.repository import Gtk, Gdk, GLib, Pango, GtkSource
+from gi.repository import Gtk, Gdk, GObject, Pango, GtkSource, GdkPixbuf
 import pygame
 import libraries
 import importlib
@@ -51,7 +51,7 @@ def is_xo():
 
 class Activity(Activity):
     def __init__(self, handle):
-        Activity.__init__(self, handle)
+        super(Activity, self).__init__(handle)
         self.paused = False
 
         watch = Gdk.Cursor.new(Gdk.CursorType.WATCH)
@@ -65,10 +65,10 @@ class Activity(Activity):
         self.box.set_show_tabs(False)
 
         self.splash = Gtk.Image()
-        pixbuf = Gdk.pixbuf_new_from_file("images/splash-colgadito.png")
-        screen = self.window.get_screen()
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file("images/splash-colgadito.png")
+        screen = self.p.get_screen()
         width, height = screen.get_width(), screen.get_height() - style.GRID_CELL_SIZE
-        pixbuf = pixbuf.scale_simple(width, height, Gdk.INTERP_BILINEAR)
+        pixbuf = pixbuf.scale_simple(width, height, GdkPixbuf.InterpType.BILINEAR)
         self.splash.set_from_pixbuf(pixbuf)
         self.splash.show()
         eb = Gtk.EventBox()
@@ -90,10 +90,10 @@ class Activity(Activity):
         self.box.show()
         self.set_canvas(self.p)
 
-        GLib.timeout_add(300, self.pump)
-        GLib.timeout_add(2000, self.init_interpreter)
-        #GLib.timeout_add(1000, self.build_editor)
-        GLib.timeout_add(1500, self.check_modified)
+        GObject.timeout_add(300, self.pump)
+        GObject.timeout_add(2000, self.init_interpreter)
+        #GObject.timeout_add(1000, self.build_editor)
+        GObject.timeout_add(1500, self.check_modified)
 
         self.build_toolbar()
         self.credits = None
@@ -151,7 +151,7 @@ class Activity(Activity):
             self.editor.save_file()
             filename = self.editor.current_file()
             self.alert(filename, "Archivo guardado.")
-            GLib.timeout_add(1500, self.check_modified)
+            GObject.timeout_add(1500, self.check_modified)
 
     def build_editor(self):
         dir_real = os.getcwd()
@@ -367,8 +367,8 @@ class FileViewer(Gtk.ScrolledWindow):
     __gtype_name__ = 'SugarFileViewer'
 
     __gsignals__ = {
-        'file-selected': (GLib.SIGNAL_RUN_FIRST,
-                           GLib.TYPE_NONE,
+        'file-selected': (GObject.SignalFlags.RUN_FIRST,
+                           GObject.TYPE_NONE,
                            ([str])),
     }
 

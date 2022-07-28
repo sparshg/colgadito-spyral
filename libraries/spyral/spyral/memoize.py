@@ -56,7 +56,7 @@ class SmartMemoize(object):
             self.scene = director.get_scene()
             self.cache = {}
         if frame - self.last_clear > 100:
-            for key, value in self.cache.items():
+            for key, value in list(self.cache.items()):
                 data, oldframe = value
                 if frame - oldframe > 250:
                     self.cache.pop(key)
@@ -86,5 +86,5 @@ class _ImageMemoize(SmartMemoize):
         :type clear_image: :class:`Image <spyral.Image>`
         """
         self.cache = dict(((image, scale) for (image, scale)
-                                          in self.cache.iteritems()
+                                          in self.cache.items()
                                           if image is clear_image))

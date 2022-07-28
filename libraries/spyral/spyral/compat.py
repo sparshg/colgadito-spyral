@@ -14,7 +14,7 @@ if sys.version_info[0] == 2 and sys.version_info[1] == 5:
 
         def setter(self, fset):
             cls_ns = sys._getframe(1).f_locals
-            for key, value in cls_ns.iteritems():
+            for key, value in cls_ns.items():
                 if value == self:
                     propname = key
                     break

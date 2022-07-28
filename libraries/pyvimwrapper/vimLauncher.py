@@ -4,7 +4,7 @@ import subprocess
 import time
 import os
 
-from logSystem import *
+from .logSystem import *
 
 dbg = getLogger('VimLauncher').debug
 err = getLogger('VimLauncher').error
