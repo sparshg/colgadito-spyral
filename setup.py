@@ -103,7 +103,7 @@ class Builder(object):
             args = ["msgfmt", "--output-file=%s" % mo_file, file_name]
             retcode = subprocess.call(args)
             if retcode:
-                print 'ERROR - msgfmt failed with return code %i.' % retcode
+                print('ERROR - msgfmt failed with return code %i.' % retcode)
 
             cat = gettext.GNUTranslations(open(mo_file, 'r'))
             translated_name = cat.gettext(activity_name)
@@ -112,7 +112,7 @@ class Builder(object):
             f.write('[Activity]\nname = %s\n' % translated_name)
             f.close()
             
-            print 'Built files for lang %s' % lang
+            print('Built files for lang %s' % lang)
 
     def get_files(self):
         self.fix_manifest()
@@ -153,7 +153,7 @@ class XOPackager(Packager):
             bundle_zip.write('/'.join((source_dir, f)).strip(),
                              '/'.join((bundle_name, f.strip())))
         bundle_zip.close()
-        print 'Wrote to %s' % self.package_path
+        print('Wrote to %s' % self.package_path)
 
 class WindowsPackager(Packager):
     def __init__(self, builder):
@@ -189,17 +189,17 @@ class SourcePackager(Packager):
         for f in self.builder.get_files():
             tar.add(os.path.join(source_dir, f), f)
         tar.close()
-        print 'Wrote to %s' % self.package_path
+        print('Wrote to %s' % self.package_path)
 
 def cmd_dev(args):
     '''Setup for development'''
-    print 'This works from within sugar only.'
+    print('This works from within sugar only.')
         
 def cmd_dist_xo(args):
     '''Create a xo bundle package'''
 
     if args:
-        print 'Usage: %prog dist_xo'
+        print('Usage: %prog dist_xo')
         return
    
     packager = XOPackager(Builder())
@@ -209,7 +209,7 @@ def cmd_dist_windows(args):
     '''Create a windows executable'''
     
     if args:
-        print 'Usage: %prog dist_windows'
+        print('Usage: %prog dist_windows')
         return
     
     packager = WindowsPackager(Builder())
@@ -219,7 +219,7 @@ def cmd_fix_manifest(args):
     '''Add missing files to the manifest'''
 
     if args:
-        print 'Usage: %prog fix_manifest'
+        print('Usage: %prog fix_manifest')
         return
 
     builder = Builder()
@@ -229,7 +229,7 @@ def cmd_dist_source(args):
     '''Create a tar source package'''
 
     if args:
-        print 'Usage: %prog dist_source'
+        print('Usage: %prog dist_source')
         return
 
     packager = SourcePackager(Builder())
@@ -238,13 +238,13 @@ def cmd_dist_source(args):
 def cmd_install(args):
     '''Install the activity in the system'''
 
-    print 'This works from within sugar only.'
+    print('This works from within sugar only.')
 
 def cmd_genpot(args):
     '''Generate the gettext pot file'''
 
     if args:
-        print 'Usage: %prog genpot'
+        print('Usage: %prog genpot')
         return
 
     po_path = os.path.join(source_dir, 'po')
@@ -277,36 +277,36 @@ def cmd_genpot(args):
     try:
         retcode = subprocess.call(args)
     except OSError:
-        print 'ERROR - Do you have gettext installed?'
+        print('ERROR - Do you have gettext installed?')
         return
 
     if retcode:
-        print 'ERROR - xgettext failed with return code %i.' % retcode
+        print('ERROR - xgettext failed with return code %i.' % retcode)
         
 
 def cmd_release(args):
     '''Do a new release of the bundle'''
-    print 'This works from within sugar only.'
+    print('This works from within sugar only.')
 
 def cmd_build(args):
     '''Build generated files'''
 
     if args:
-        print 'Usage: %prog build'
+        print('Usage: %prog build')
         return
 
     builder = Builder()
     builder.build()
 
 def print_commands():
-    print 'Available commands:\n'
+    print('Available commands:\n')
 
-    for name, func in globals().items():
+    for name, func in list(globals().items()):
         if name.startswith('cmd_'):
-            print "%-20s %s" % (name.replace('cmd_', ''), func.__doc__)
+            print("%-20s %s" % (name.replace('cmd_', ''), func.__doc__))
 
-    print '\n(Type "./setup.py <command> --help" for help about a ' \
-          'particular command\'s options.'
+    print('\n(Type "./setup.py <command> --help" for help about a ' \
+          'particular command\'s options.')
 
 def start(bundle_name=None):
     if bundle_name:

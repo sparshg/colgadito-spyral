@@ -24,10 +24,10 @@ def format_columns(message, data):
     # calculate a format string for the output lines
     format_str = "%%-%ds        %%-%ds" % (first_width, second_width)
 
-    print message
-    print "=" * max(total_width, len(message))
+    print(message)
+    print("=" * max(total_width, len(message)))
     for x in data:
-        print format_str % x
+        print(format_str % x)
 
 if __name__ == '__main__':
     parser = OptionParser()
@@ -47,13 +47,13 @@ if __name__ == '__main__':
 
     if options.list:
         if languages:
-            print 'Available translations: %s' % ', '.join(languages)
+            print('Available translations: %s' % ', '.join(languages))
         else:
-            print 'No available translations'
+            print('No available translations')
         sys.exit()
         
     if options.graphviz and not options.profile:
-        print 'Graphiz option '
+        print('Graphiz option ')
     
     if options.locale != 'default':
         lang = gettext.translation("org.laptop.community.cisc374.mathadder", "./locale", languages=[options.locale])
@@ -130,5 +130,5 @@ if __name__ == '__main__':
             r = envoy.run('python libraries/gprof2dot.py -f pstats "%s.pstats" | dot -Tpng -o "%s.png"' % (file, file))
             
     except Exception:
-        print 'Could not generate image outputs from profiling. Is graphviz installed?'
+        print('Could not generate image outputs from profiling. Is graphviz installed?')
         sys.exit()
